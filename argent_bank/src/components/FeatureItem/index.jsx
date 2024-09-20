@@ -1,6 +1,5 @@
-// src/components/FeatureItem.js
 import React from 'react';
-import './FeatureItem.css'; // Import du CSS pour le composant FeatureItem
+import './FeatureItem.css';
 
 const FeatureItem = ({ icon, title, description }) => {
   return (
