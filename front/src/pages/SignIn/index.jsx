@@ -1,7 +1,41 @@
 import React from 'react';
 import './SignIn.css';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { userLogin } from "../../service/serviceApi";
+import { isUserAuthenticated } from "./authSelector";
 
-const SignIn = () => {
+function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const isAuthenticated = useSelector(isUserAuthenticated);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/profile");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleInputEmail = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleInputPassword = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      dispatch(userLogin({ email, password }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">
@@ -10,21 +44,33 @@ const SignIn = () => {
         <form>
           <div className="input-wrapper">
             <label htmlFor="username">Username</label>
-            <input type="text" id="username" />
+            <input
+              type="text"
+              id="username"
+              value={email}
+              onInput={handleInputEmail}
+            />
           </div>
           <div className="input-wrapper">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" />
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onInput={handleInputPassword}
+            />
           </div>
           <div className="input-remember">
             <input type="checkbox" id="remember-me" />
             <label htmlFor="remember-me">Remember me</label>
           </div>
-          <a href="./user.html" className="sign-in-button">Sign In</a>
+          <button className="sign-in-button" onClick={handleSubmit}>
+            Sign In
+          </button>
         </form>
       </section>
     </main>
   );
-};
+}
 
 export default SignIn;
