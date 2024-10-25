@@ -10,22 +10,26 @@ export const authSlice = createSlice({
     error: null,
   },
   reducers: {
-    logoutUser: (currentState) => {
-      currentState.token = null;
+    logoutUser: (state) => {
+      state.token = null;
+      state.error = null;
       localStorage.removeItem("token");
+    },
+    clearError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(userLogin.fulfilled, (state, action) => {
       state.token = action.payload.body.token;
-      state.error = "";
+      state.error = null;
       localStorage.setItem("token", action.payload.body.token);
     });
-    builder.addCase(userLogin.rejected, (state, action) => {
-      state.error = action.payload;
+    builder.addCase(userLogin.rejected, (state) => {
+      state.error = "Email ou mot de passe incorrect";
     });
   },
 });
 
-export const { logoutUser } = authSlice.actions;
+export const { logoutUser, clearError } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,23 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import './SignIn.css';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { userLogin } from "../../service/serviceApi";
 import { isUserAuthenticated } from "./authSelector";
+import { clearError } from "./authSlice"
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const isAuthenticated = useSelector(isUserAuthenticated);
+  const error = useSelector((state) => state.auth.error);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
+    dispatch(clearError());
     if (isAuthenticated) {
       navigate("/profile");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, dispatch]);
 
   const handleInputEmail = (e) => {
     setEmail(e.target.value);
@@ -36,12 +38,13 @@ function SignIn() {
       console.error(error);
     }
   };
+
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">
         <i className="fa fa-user-circle sign-in-icon"></i>
         <h1>Sign In</h1>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="input-wrapper">
             <label htmlFor="username">Username</label>
             <input
@@ -64,7 +67,8 @@ function SignIn() {
             <input type="checkbox" id="remember-me" />
             <label htmlFor="remember-me">Remember me</label>
           </div>
-          <button className="sign-in-button" onClick={handleSubmit}>
+          {error && <p className="error-message">{error}</p>}
+          <button className="sign-in-button" type="submit">
             Sign In
           </button>
         </form>
