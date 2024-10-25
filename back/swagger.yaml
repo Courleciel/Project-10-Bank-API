@@ -68,13 +68,14 @@ paths:
       parameters:
         - in: header
           name: Authorization
+          type: string
           description: Attach Bearer JWT token
           required: true
       produces:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile retrieved successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -91,6 +92,7 @@ paths:
       parameters:
         - in: header
           name: Authorization
+          type: string
           description: Attach Bearer JWT token
           required: true
         - in: body
@@ -103,11 +105,114 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
+        '500':
+          description: Internal Server Error
+  /accounts/{accountId}/transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Retrieve Transactions by Account
+      description: API to retrieve all transactions for a specific account, grouped by account
+      parameters:
+        - in: path
+          name: accountId
+          type: string
+          required: true
+          description: ID of the account to retrieve transactions for
+        - in: header
+          name: Authorization
+          type: string
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved transactions for the account
+          schema:
+            $ref: '#/definitions/TransactionListResponse'
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized - JWT token required
+        '500':
+          description: Internal Server Error
+  /transactions/{transactionId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Retrieve Transaction Details
+      description: API to retrieve details of a specific transaction
+      parameters:
+        - in: path
+          name: transactionId
+          type: string
+          required: true
+          description: ID of the transaction to retrieve
+        - in: header
+          name: Authorization
+          type: string
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction details retrieved successfully
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+        '401':
+          description: Unauthorized - JWT token required
+        '500':
+          description: Internal Server Error
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Update Transaction Information
+      description: API to update information on a transaction, including category and notes
+      parameters:
+        - in: path
+          name: transactionId
+          type: string
+          required: true
+          description: ID of the transaction to update
+        - in: header
+          name: Authorization
+          type: string
+          description: Attach Bearer JWT token
+          required: true
+        - in: body
+          name: body
+          description: Payload to update transaction attributes
+          required: true
+          schema:
+            $ref: '#/definitions/TransactionUpdate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction updated successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid request payload
+        '404':
+          description: Transaction not found
+        '401':
+          description: Unauthorized - JWT token required
         '500':
           description: Internal Server Error
 securityDefinitions:
@@ -164,3 +269,42 @@ definitions:
         type: string
       lastName:
         type: string
+  Transaction:
+    type: object
+    properties:
+      accountId:
+        type: string
+        description: ID of the associated account
+      date:
+        type: string
+        format: date
+        description: Date of the transaction
+      amount:
+        type: number
+        format: float
+        description: Amount of the transaction
+      description:
+        type: string
+        description: Description of the transaction (optional)
+      category:
+        type: string
+        description: Category of the transaction
+      notes:
+        type: string
+        description: Notes about the transaction (optional)
+  TransactionUpdate:
+    type: object
+    properties:
+      category:
+        type: string
+        description: New category of the transaction
+      notes:
+        type: string
+        description: New notes about the transaction (optional)
+  TransactionListResponse:
+    type: object
+    properties:
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
