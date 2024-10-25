@@ -182,13 +182,13 @@ paths:
       tags:
         - Transaction Module
       summary: Update Transaction Information
-      description: API to update information on a transaction, including category and notes
+      description: API to update information on a specific transaction, including category and notes. The transaction ID in the path must match the transactionId in the body for validation.
       parameters:
         - in: path
           name: transactionId
           type: string
           required: true
-          description: ID of the transaction to update
+          description: ID of the transaction to update (should match the transactionId in the body)
         - in: header
           name: Authorization
           type: string
@@ -196,7 +196,7 @@ paths:
           required: true
         - in: body
           name: body
-          description: Payload to update transaction attributes
+          description: Payload with transactionId, category, and notes for the transaction to update
           required: true
           schema:
             $ref: '#/definitions/TransactionUpdate'
@@ -295,6 +295,9 @@ definitions:
   TransactionUpdate:
     type: object
     properties:
+      transactionId:
+        type: string
+        description: ID of the transaction to update (mandatory for ensuring correct identification)
       category:
         type: string
         description: New category of the transaction
